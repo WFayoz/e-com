@@ -5,10 +5,10 @@ from starlette.responses import JSONResponse
 from app.models.categories import Category
 from app.schemas import CreateCategory, ReadCategory, UpdateCategory, ResponseSchema
 
-category_router = APIRouter()
+category_router = APIRouter(prefix='/category', tags=['category'])
 
 
-@category_router.get('/category')
+@category_router.get('')
 async def get_categories():
     categories = await Category.get_all()
     return ResponseSchema[list[ReadCategory]](
@@ -17,7 +17,7 @@ async def get_categories():
     )
 
 
-@category_router.get('/category/{id}')
+@category_router.get('/{id}')
 async def get_category(id: int):
     category = await Category.get(id)
     if category is None:
@@ -31,7 +31,7 @@ async def get_category(id: int):
     )
 
 
-@category_router.patch('/category/{id}')
+@category_router.patch('/{id}')
 async def up_category(id: int, data: UpdateCategory):
     update_category = await Category.update(id, **data.model_dump(exclude_unset=True))
     return ResponseSchema[UpdateCategory](
@@ -40,7 +40,7 @@ async def up_category(id: int, data: UpdateCategory):
     )
 
 
-@category_router.delete('/category/{id}')
+@category_router.delete('/{id}')
 async def del_category(id: int):
     await Category.delete(id)
     return ResponseSchema(
@@ -48,7 +48,7 @@ async def del_category(id: int):
     )
 
 
-@category_router.post('/category')
+@category_router.post('')
 async def cr_category(data: CreateCategory):
     category = await Category.create(**data.model_dump())
     return ResponseSchema[ReadCategory](

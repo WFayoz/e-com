@@ -2,9 +2,8 @@ from typing import TypeVar, Generic
 
 from pydantic import BaseModel
 
-# from schemas.auth import RegisterForm
 from app.schemas.categories import CreateCategory, ReadCategory, UpdateCategory
-# from schemas.products import CreateProduct
+from app.schemas.products import CreateProduct, UpdateProduct, ReadProduct
 
 T = TypeVar('T', bound=BaseModel)
 
@@ -18,7 +17,9 @@ __all__ = [
     'ResponseSchema',
     'CreateCategory',
     'ReadCategory',
-    # 'CreateProduct',
     'UpdateCategory',
-    # 'RegisterForm',
+    # product
+    'CreateProduct',
+    'ReadProduct',
+    'UpdateProduct',
 ]
