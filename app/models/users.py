@@ -2,8 +2,8 @@ from pydantic import EmailStr
 from sqlalchemy import Integer, String, select
 from sqlalchemy.orm import Mapped, mapped_column
 
-from base_model import Model
-from base_model import db
+from app.models.base_model import Model
+from app.models.base_model import db
 
 
 class User(Model):
