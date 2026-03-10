@@ -2,8 +2,8 @@ from fastapi import APIRouter
 from starlette import status
 from starlette.responses import JSONResponse
 
-from app.models.categories import Category
-from app.models.products import Product
+from app.models.category import Category
+from app.models.product import Product
 from app.schemas import ResponseSchema, ReadProduct, UpdateProduct, CreateProduct
 
 product_router = APIRouter(prefix='/product', tags=['product'])
@@ -56,3 +56,14 @@ async def cr_product(data: CreateProduct):
         message=f'Product {product.id} created',
         data=product
     )
+
+
+@product_router.post('/search')
+async def get_products(search_query: str = None):
+    products = await Product.get_all()
+    # Filter products based on search_query if provided
+    if search_query:
+        products = [product for product in products if search_query.lower() in product.lower()]
+        return {"products": products}
+
+    return {"no products found"}

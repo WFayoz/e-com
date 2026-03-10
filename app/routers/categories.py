@@ -1,8 +1,8 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from starlette import status
 from starlette.responses import JSONResponse
 
-from app.models.categories import Category
+from app.models.category import Category
 from app.schemas import CreateCategory, ReadCategory, UpdateCategory, ResponseSchema
 
 category_router = APIRouter(prefix='/category', tags=['category'])
