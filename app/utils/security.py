@@ -47,7 +47,7 @@ async def get_current_user(token: Annotated[str, Depends(http_bearer)]):
 
     user_id = encoded_jwt.get('sub')
 
-    if user_id.isdigit() and (user := await User.get(int(user_id))):
+    if user_id and (user := await User.get(user_id)):
         return user
 
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")

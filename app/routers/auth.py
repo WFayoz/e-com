@@ -8,10 +8,10 @@ from starlette.responses import JSONResponse
 from app.models.user import User
 from app.schemas.auth import VerifyCodeForm, RegisterForm, LoginForm
 from app.services.otp_services import OtpService
-from app.utils.security import get_password_hash, verify_password, create_access_token
+from app.utils.security import get_password_hash, verify_password, create_access_token, get_current_user
 from app.utils.utils import generate_code
 
-auth_router = APIRouter(tags=['auth'])
+auth_router = APIRouter(prefix='/auth', tags=['auth'])
 
 
 # def otp_service():
