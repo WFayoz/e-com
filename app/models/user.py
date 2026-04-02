@@ -5,8 +5,7 @@ from sqlalchemy import String, Enum, select
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.models.base_model import Model, db
-
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+from app.utils.security import verify_password, get_password_hash
 
 
 class User(Model):
@@ -37,8 +36,8 @@ class User(Model):
         return self.role == User.Role.ADMIN
 
     def check_password(self, password: str) -> bool:
-        return pwd_context.verify(password, self.password)
+        return verify_password(password, self.password)
 
     @staticmethod
     def get_password_hash(password: str) -> str:
-        return pwd_context.hash(password)
+        return get_password_hash(password)

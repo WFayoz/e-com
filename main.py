@@ -7,13 +7,12 @@ from app.models.base_model import db
 from app.routers import router
 
 
-
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
-    await db.create_all()
+    # await db.create_all()
     print('project ishga tushdi')
     yield
-    await db.drop_all()
+    # await db.drop_all()
     print('project toxtadi')
 
 

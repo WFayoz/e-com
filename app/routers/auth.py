@@ -27,7 +27,6 @@ async def login_view(data: RegisterForm, service: OtpService = Depends(OtpServic
             status.HTTP_400_BAD_REQUEST
         )
     user_data = data.model_dump(exclude={"confirm_password"})
-
     service.save_user_before_registration(data.phone_number, user_data)
 
     code = generate_code()

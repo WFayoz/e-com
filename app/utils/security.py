@@ -10,8 +10,6 @@ from starlette import status
 from app.config.config import settings
 from jose import jwt, exceptions
 
-from app.models.user import User
-
 pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
 
 http_bearer = HTTPBearer()
@@ -37,6 +35,8 @@ def get_password_hash(password: str) -> str:
 
 
 async def get_current_user(token: Annotated[str, Depends(http_bearer)]):
+    from app.models.user import User
+
     token = token.credentials
     try:
         encoded_jwt = jwt.decode(token, settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM])
