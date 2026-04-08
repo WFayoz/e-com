@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual env
+.venv/
+venv/
+
+# Environment files
+.env
+.env.*
+
+# IDE
+.idea/
+.vscode/
+
+# OS files
+.DS_Store
+
+# Test / cache
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Build artifacts
+dist/
+build/
+*.egg-info/
+
+# Alembic cache only
+alembic/__pycache__/
+alembic/versions/__pycache__/
