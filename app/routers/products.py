@@ -1,10 +1,12 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends, HTTPException
 from starlette import status
 from starlette.responses import JSONResponse
 
 from app.models.category import Category
 from app.models.product import Product
+from app.models.user import User
 from app.schemas import ResponseSchema, ReadProduct, UpdateProduct, CreateProduct
+from app.utils.security import get_current_user, get_current_admin
 
 product_router = APIRouter(prefix='/product', tags=['product'])
 
@@ -33,7 +35,7 @@ async def get_product(id: int):
 
 
 @product_router.patch('/{id}')
-async def up_product(id: int, data: UpdateProduct):
+async def up_product(id: int, data: UpdateProduct, current_user: User = Depends(get_current_admin)):
     update_product = await Product.update(id, **data.model_dump(exclude_unset=True))
     return ResponseSchema[UpdateProduct](
         message='Product updated',
@@ -42,7 +44,7 @@ async def up_product(id: int, data: UpdateProduct):
 
 
 @product_router.delete('/{id}')
-async def del_product(id: int):
+async def del_product(id: int, current_user: User = Depends(get_current_admin)):
     await Product.delete(id)
     return ResponseSchema(
         message=f"Product {id} deleted"
@@ -50,7 +52,7 @@ async def del_product(id: int):
 
 
 @product_router.post('')
-async def cr_product(data: CreateProduct):
+async def cr_product(data: CreateProduct, current_user: User = Depends(get_current_admin)):
     product = await Product.create(**data.model_dump())
     return ResponseSchema[ReadProduct](
         message=f'Product {product.id} created',
