@@ -1,7 +1,12 @@
-from sqlalchemy import Integer, String, Numeric
+from typing import TYPE_CHECKING
+
+from sqlalchemy import ForeignKey, Integer, Numeric, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base_model import Model
+
+if TYPE_CHECKING:
+    from app.models.category import Category
 
 
 class Product(Model):
@@ -15,6 +20,7 @@ class Product(Model):
 
     rating: Mapped[float] = mapped_column(Numeric(3, 2), default=0, nullable=False)
     availability: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    category_id: Mapped[int] = mapped_column(ForeignKey("categories.id"), nullable=False)
 
     @property
     def discounted_price(self) -> float:
@@ -23,4 +29,4 @@ class Product(Model):
         discount = float(self.discount_percentage)
         return round(price * (1 - discount / 100), 2)
 
-    # category = relationship("Category", back_populates="products")
+    category: Mapped["Category"] = relationship("Category", back_populates="products")
