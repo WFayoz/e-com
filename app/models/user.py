@@ -1,6 +1,5 @@
 import enum
 
-from passlib.context import CryptContext
 from sqlalchemy import String, Enum, select
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -29,6 +28,11 @@ class User(Model):
     @classmethod
     async def get_by_phone(cls, phone_number: str):
         result = await db.execute(select(cls).where(cls.phone_number == phone_number))
+        return result.scalar_one_or_none()
+
+    @classmethod
+    async def get_admin(cls):
+        result = await db.execute(select(cls).where(cls.role == cls.Role.ADMIN))
         return result.scalar_one_or_none()
 
     @property

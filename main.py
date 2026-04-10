@@ -1,6 +1,8 @@
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
+from starlette.middleware.cors import CORSMiddleware
+from starlette.requests import Request
 from starlette.middleware.sessions import SessionMiddleware
 
 from app.admin import setup_admin
@@ -11,14 +13,40 @@ from app.routers import router
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
-    await db.create_all()
+    # await db.create_all()
     print('project ishga tushdi')
     yield
-    await db.drop_all()
+    # await db.drop_all()
     print('project toxtadi')
 
 
 app = FastAPI(docs_url='/', root_path='/api', title="E-Com", lifespan=lifespan)
 app.add_middleware(SessionMiddleware, secret_key=settings.SECRET_KEY)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+@app.middleware("http")
+async def db_session_middleware(request: Request, call_next):
+    session = db.create_session()
+    token = db.set_session(session)
+    try:
+        response = await call_next(request)
+        if session.in_transaction():
+            await session.rollback()
+        return response
+    except Exception:
+        if session.in_transaction():
+            await session.rollback()
+        raise
+    finally:
+        db.reset_session(token)
+        await session.close()
+
+
 setup_admin(app)
 app.include_router(router)

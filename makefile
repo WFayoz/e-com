@@ -9,3 +9,6 @@ down-migrate:
 
 current-mig:
 	alembic current
+
+test:
+	./.venv/bin/python -m unittest tests/test_critical_paths.py

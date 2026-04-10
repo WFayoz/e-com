@@ -1,10 +1,11 @@
 from decimal import Decimal
+from uuid import UUID
 
 from pydantic import BaseModel
 
 
 class OrderItemOut(BaseModel):
-    id: str
+    id: UUID
     product_id: int
     product_name: str
     quantity: int
@@ -16,7 +17,7 @@ class OrderItemOut(BaseModel):
 
 
 class OrderOut(BaseModel):
-    id: str
+    id: UUID
     status: str
     total_amount: Decimal
     items: list[OrderItemOut]

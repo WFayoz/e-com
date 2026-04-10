@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from pydantic import BaseModel, Field
 
 from app.schemas.products import ReadProduct
@@ -13,7 +15,7 @@ class UpdateCartItem(BaseModel):
 
 
 class CartItemOut(BaseModel):
-    id: str
+    id: UUID
     product_id: int
     quantity: int
     product: ReadProduct

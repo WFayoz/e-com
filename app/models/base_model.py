@@ -1,9 +1,10 @@
+from contextvars import ContextVar
 from datetime import datetime
 
 from sqlalchemy import DateTime, func, update as sqlalchemy_update, select, delete as sqlalchemy_delete
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.ext.asyncio import AsyncAttrs, create_async_engine, async_sessionmaker, AsyncSession
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, declared_attr, selectinload, sessionmaker
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, declared_attr, selectinload
 from sqlalchemy.sql import text
 
 from app.config.config import settings
@@ -29,14 +30,37 @@ class Database:
 
     def __init__(self):
         self._engine = None
-        self._session = None
+        self._session_factory = None
+        self._session_context: ContextVar[AsyncSession | None] = ContextVar(
+            "db_session",
+            default=None,
+        )
 
     def init(self):
         self._engine = create_async_engine(settings.postgres_async_url)
-        self._session = async_sessionmaker(self._engine, expire_on_commit=False)()
+        self._session_factory = async_sessionmaker(self._engine, expire_on_commit=False)
+
+    def create_session(self) -> AsyncSession:
+        return self._session_factory()
+
+    def set_session(self, session: AsyncSession):
+        return self._session_context.set(session)
+
+    def reset_session(self, token) -> None:
+        self._session_context.reset(token)
+
+    @property
+    def session(self) -> AsyncSession:
+        session = self._session_context.get()
+        if session is None:
+            raise RuntimeError(
+                "Database session is not available in the current context. "
+                "Make sure the request-scoped database middleware is running."
+            )
+        return session
 
     def __getattr__(self, name):
-        return getattr(self._session, name)
+        return getattr(self.session, name)
 
     async def create_all(self):
         async with self._engine.begin() as engine:
@@ -125,8 +149,3 @@ class Model(Base, AbstractClass):
     )
     updated_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now(), onupdate=func.now())
     created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
-
-
-async_session_maker = sessionmaker(
-    db.engine, class_=AsyncSession, expire_on_commit=False
-)
