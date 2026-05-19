@@ -35,4 +35,4 @@ Clone the repository:
 
 ```bash
 git clone https://github.com/WFayoz/e-com
-cd e-com-backend
+cd e-com
