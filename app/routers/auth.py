@@ -6,7 +6,6 @@ from starlette.responses import JSONResponse
 from app.config.config import settings
 from app.models.user import User
 from app.schemas.auth import (
-    BootstrapAdminForm,
     LoginForm,
     PasswordResetConfirmForm,
     PasswordResetRequestForm,
@@ -182,24 +181,3 @@ async def password_reset_confirm(
     service.delete_password_reset_request(data.phone_number)
     return {"message": "Password reset successfully"}
 
-
-@auth_router.post('/bootstrap-admin')
-async def bootstrap_admin(data: BootstrapAdminForm):
-    existing_admin = await User.get_admin()
-    if existing_admin is not None:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Admin already exists")
-
-    if data.bootstrap_key != settings.ADMIN_BOOTSTRAP_KEY:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Invalid bootstrap key")
-
-    user = await User.create(
-        firstname=data.firstname,
-        lastname=data.lastname,
-        phone_number=data.phone_number,
-        password=get_password_hash(data.password),
-        role=User.Role.ADMIN,
-    )
-    return {
-        "message": "Admin created successfully",
-        "admin_id": str(user.id),
-    }
