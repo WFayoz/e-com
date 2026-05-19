@@ -16,7 +16,6 @@ class Settings(BaseSettings):
     JWT_REFRESH_TOKEN_EXPIRE_TIME: int = Field(default=10080)
 
     SECRET_KEY: str = Field(default='secret_key')
-    ADMIN_BOOTSTRAP_KEY: str = Field(default='change-me')
 
     # redis
     REDIS_URL: str = Field(default='redis://localhost:6379/1')
